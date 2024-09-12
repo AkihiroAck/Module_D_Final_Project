@@ -75,10 +75,15 @@ WSGI_APPLICATION = 'wow.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'wow',                # Имя вашей базы данных
+        'USER': 'postgres',      # Ваше имя пользователя
+        'PASSWORD': '1234',  # Ваш пароль
+        'HOST': 'localhost',          # Адрес сервера базы данных
+        'PORT': '5432',               # Порт PostgreSQL (по умолчанию 5432)
     }
 }
+
 
 
 # Password validation
