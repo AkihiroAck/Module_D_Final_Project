@@ -1,0 +1,16 @@
+{% extends 'flatpages/index.html' %}
+
+{% block title %}
+{{ post.title }}
+{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1>{{ post.title }}</h1>
+        <p class="text-muted">Опубликовано: {{ post.created_at }}</p>
+        <div>
+            {{ post.content|safe }}  <!-- Выводим контент поста -->
+        </div>
+        <a href="{% url 'post_list' %}" class="btn btn-primary mt-3">Назад к списку постов</a>
+    </div>
+{% endblock %}

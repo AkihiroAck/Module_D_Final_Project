@@ -1,0 +1,19 @@
+{% extends 'flatpages/index.html' %}
+
+{% block title %}
+Список постов
+{% endblock %}
+
+{% block body %}
+    <h1 class="mt-5">Список постов</h1>
+    <ul class="list-group mt-4">
+        {% for post in posts %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <a href="{% url 'post_detail' post.id %}">{{ post.title }}</a>
+                <span class="text-muted">{{ post.created_at }}</span>
+            </li>
+        {% empty %}
+            <li class="list-group-item">Нет постов</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

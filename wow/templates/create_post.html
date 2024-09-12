@@ -1,0 +1,14 @@
+{% extends 'flatpages/index.html' %}
+
+{% block title %}
+Создать пост
+{% endblock %}
+
+{% block body %}
+    <h1>Создать пост</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Сохранить</button>
+    </form>
+{% endblock %}
