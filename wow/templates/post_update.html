@@ -1,0 +1,23 @@
+{% extends 'flatpages/index.html' %}
+
+{% block title %}
+Редактировать пост
+{% endblock %}
+
+{% block content %}
+    <div class="mt-5">
+        <h1>Редактировать пост</h1>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.media }}
+            {{ form.as_p }}
+            <button type="submit">Сохранить</button>
+        </form>
+        {% load static %}
+        <script src="{% static 'js/ckeditor_config.js' %}"></script>
+        <script>
+            CKEDITOR.replace('id_content', {customConfig: '{% static 'js/ckeditor_config.js' %}'});
+        </script>
+        <a href="{% url 'post_detail' post.pk %}">Отменить</a>
+    </div>
+{% endblock %}

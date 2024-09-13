@@ -42,6 +42,13 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.flatpages',
     
+    # django-allauth
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',  # Пример для Google
+    'allauth.socialaccount.providers.yandex',  # Пример для Yandex
+    
     # django-ckeditor
     'ckeditor',
     'ckeditor_uploader',
@@ -59,15 +66,48 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.sites.middleware.CurrentSiteMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
-# Для flatpages
+# Для flatpages и django-allauth
 SITE_ID = 1
+
+# Настройки BACKENDS для django-allauth
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',  # Для обычной аутентификации
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+# Настройки django-allauth
+LOGIN_REDIRECT_URL = '/'  # URL для перенаправления после входа
+LOGOUT_REDIRECT_URL = '/'
+ACCOUNT_AUTHENTICATION_METHOD = 'username'  # Аутентификация через имя пользователя
+ACCOUNT_USERNAME_REQUIRED = True  # Требовать имя пользователя
+ACCOUNT_EMAIL_REQUIRED = True  # Требовать электронную почту
+# ACCOUNT_EMAIL_VERIFICATION = "mandatory"  # Версификация электронной почты обязательна
+ACCOUNT_EMAIL_VERIFICATION = 'optional'  # Проверка электронной почты может быть обязательной или опциональной
+
+
 
 # Настройки загрузки медиафайлов для django-ckeditor
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 CKEDITOR_UPLOAD_PATH = 'uploads/'
+
+# Настройки для CKEditor
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'Custom',
+        'toolbar_Custom': [
+            ['Bold', 'Italic', 'Underline', 'RemoveFormat'],
+            ['NumberedList', 'BulletedList', 'Blockquote'],
+            ['Link', 'Unlink', 'Image', 'Table'],
+        ],
+        'height': 300,
+        'width': 800,
+        'ckeditor_config': 'static/js/ckeditor_config.js',
+    },
+}
 
 
 ROOT_URLCONF = 'wow.urls'
@@ -142,6 +182,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]  # Если у вас есть папка static в корне проекта
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

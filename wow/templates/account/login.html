@@ -1,0 +1,20 @@
+{% extends 'flatpages/index.html' %}
+{% load socialaccount %}
+
+{% block title %}
+Войти
+{% endblock %}
+
+{% block content %}
+    <div class="mt-5">
+        <h2>Войти</h2>
+        <form method="post" action="{% url 'account_login' %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <p><button type="submit" class="btn btn-primary">Войти</button></p>
+        </form>
+        <hr>
+        <p>Или войдите через:</p>
+        <a href="{% provider_login_url 'yandex' %}" class="btn btn-primary">Войти через Yandex</a>
+    </div>
+{% endblock %}

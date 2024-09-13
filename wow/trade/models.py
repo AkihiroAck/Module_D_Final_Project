@@ -28,4 +28,10 @@ class Post(models.Model):
 
 # Отклик
 class OfferResponse(models.Model):
-    pass
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # Автор отклика
+    post = models.ForeignKey(Post, related_name='responses', on_delete=models.CASCADE)  # Пост, к которому привязан отклик
+    content = models.TextField()  # Содержимое отклика
+    created_at = models.DateTimeField(auto_now_add=True)  # Дата создания
+
+    def __str__(self):
+        return f'{self.author} откликнулся на {self.post.title}:{self.content}'

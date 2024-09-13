@@ -18,10 +18,13 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from trade.views import SignupRedirectView
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('trade.urls')),  # Подключите маршруты из приложения trade
-    # path('', include('django.contrib.flatpages.urls')),  # Flatpages должны быть после всех других маршрутов
+    path('accounts/signup/', SignupRedirectView.as_view(), name='signup_redirect'),
+    path('accounts/', include('allauth.urls')),
+    path('ckeditor/', include('ckeditor_uploader.urls')),
+    path('', include('trade.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

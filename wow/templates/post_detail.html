@@ -4,13 +4,25 @@
 {{ post.title }}
 {% endblock %}
 
-{% block body %}
-    <div class="container mt-5">
+{% block content %}
+    <div class="text-center mt-5">
         <h1>{{ post.title }}</h1>
-        <p class="text-muted">Опубликовано: {{ post.created_at }}</p>
+        <h4>Категории: {{ post.categories.all|dictsort:"title"|join:", " }}</h4>
         <div>
-            {{ post.content|safe }}  <!-- Выводим контент поста -->
+            {{ post.content|safe }}
+            {% if post.image %}
+                <img src="{{ post.image.url }}" alt="Post Image" style="max-width: 100%; max-height: 300px;">
+            {% endif %}
+            <p class="text-muted">Опубликовано: {{ post.created_at }}</p>
         </div>
-        <a href="{% url 'post_list' %}" class="btn btn-primary mt-3">Назад к списку постов</a>
+
+        <div>
+            {% if user_is_author or user_is_staff %}
+                <a href="{% url 'post_update' post.id %}" class="btn btn-primary mt-3">Редактировать</a>
+                <a href="{% url 'post_delete' post.id %}" class="btn btn-primary mt-3">Удалить</a>
+                <hr style="margin: 16px auto 0px auto; width: 350px">
+            {% endif %}
+            <a href="{% url 'post_list' %}" class="btn btn-primary mt-3">Назад к списку постов</a>
+        </div>
     </div>
 {% endblock %}

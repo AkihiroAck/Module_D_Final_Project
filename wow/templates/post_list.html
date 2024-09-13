@@ -4,7 +4,7 @@
 Список постов
 {% endblock %}
 
-{% block body %}
+{% block content %}
     <h1 class="mt-5">Список постов</h1>
     <ul class="list-group mt-4">
         {% for post in posts %}
@@ -16,4 +16,8 @@
             <li class="list-group-item">Нет постов</li>
         {% endfor %}
     </ul>
+    <div>
+        <a href="{% url 'post_create' %}" class="btn btn-primary mt-3">Создать Объявление</a>
+    </div>
+
 {% endblock %}
