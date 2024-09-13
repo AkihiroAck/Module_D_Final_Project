@@ -28,6 +28,7 @@
                                 {% if user.is_authenticated %}
                                     <li class="nav-item"><a class="dropdown-item" href="#">{{ user.username }}</a></li>
                                     <li><a class="dropdown-item" href="{% url 'account_logout' %}">Выйти</a></li>
+                                    <li><a class="dropdown-item" style="color: red" href="{% url 'delete_account' %}">Удалить аккаунт</a></li>
                                 {% else %}
                                     <li><a class="dropdown-item" href="{% url 'account_login' %}">Вход</a></li>
                                     <li><a class="dropdown-item" href="{% url 'account_signup' %}">Регистрация</a></li>

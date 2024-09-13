@@ -6,12 +6,12 @@
 {% endblock %}
 
 {% block content %}
-<div class="mt-5">
+<div class="mt-3 mb-4">
     <h1>Вход через {{ provider.name }}</h1>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <p><button type="submit" class="btn btn-primary">Войти</button> <a href="{% url 'account_login' %}"class="btn btn-secondary">Отмена</a></p>
+        <p><button type="submit" class="btn btn-primary">Войти</button> <a href="{% url 'account_login' %}" class="btn btn-secondary">Отмена</a></p>
     </form>
 </div>
 {% endblock %}

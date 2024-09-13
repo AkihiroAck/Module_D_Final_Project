@@ -9,6 +9,7 @@ from django.contrib.auth.mixins import UserPassesTestMixin
 from django.views import View
 from django.urls import reverse
 from django.shortcuts import redirect
+from django.contrib.auth.models import User
 
 # Create your views here.
 
@@ -80,4 +81,19 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 class SignupRedirectView(View):
     def get(self, request, *args, **kwargs):
         return redirect(reverse('account_login'))
-        
+
+
+class DeleteAccountView(LoginRequiredMixin, DeleteView):
+    model = User  # Используйте модель User
+    template_name = 'delete_account.html'
+    success_url = reverse_lazy('post_list')  # Перенаправление после успешного удаления
+
+    def get_object(self, queryset=None):
+        return self.request.user  # Удаление текущего пользователя
+
+    def dispatch(self, request, *args, **kwargs):
+        # Проверка, что пользователь удаляет только свой аккаунт
+        if self.get_object() != request.user:
+            return redirect('home')  # Перенаправление, если попытка удаления чужого аккаунта
+        return super().dispatch(request, *args, **kwargs)
+    
