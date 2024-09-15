@@ -17,7 +17,7 @@
             {% endif %}
         </p>
         <p class="text-muted">Создано: {{ response.created_at }}</p>
-        <div>
+        <div class="mb-3">
             {% if user.is_authenticated %}
                 <div class="mb-3">
                     {% if user.id == response.post.author.id and not response.is_accepted %}
@@ -27,9 +27,11 @@
                         </form>
                     {% endif %}
                     {% if user.id == response.client.id or user.id == response.post.author.id %}
-                        <a href="{% url 'offer_response_delete' response.id %}" class="btn btn-primary">Удалить</a>
+                        <a href="{% url 'offer_response_delete' response.id %}" class="btn btn-danger">Удалить</a>
                     {% endif %}
                 </div>
+                <a class="btn btn-primary" href="{% url 'author_responses' %}">Отклики</a>
+                <a class="btn btn-primary" href="{% url 'user_responses' %}">Отклики от меня</a>
             {% endif %}
         </div>
     </div>

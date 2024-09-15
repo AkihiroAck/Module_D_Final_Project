@@ -108,7 +108,7 @@ class OfferResponseAcceptView(LoginRequiredMixin, UpdateView):
     
 class AuthorPostResponsesView(LoginRequiredMixin, ListView):
     model = OfferResponse
-    template_name = 'user_responses.html'
+    template_name = 'offer_response_list.html'
     context_object_name = 'responses'
 
     def get_queryset(self):
@@ -118,7 +118,7 @@ class AuthorPostResponsesView(LoginRequiredMixin, ListView):
     
 class UserPostResponsesView(LoginRequiredMixin, ListView):
     model = OfferResponse
-    template_name = 'user_responses.html'
+    template_name = 'offer_response_list.html'
     context_object_name = 'responses'
 
     def get_queryset(self):

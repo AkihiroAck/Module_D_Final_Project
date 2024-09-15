@@ -10,7 +10,7 @@
         <form method="post">
             {% csrf_token %}
             {{ form.as_p }}
-            <button type="submit" class="btn btn-primary">Отправить отклик</button>
+            <button type="submit" class="btn btn-primary">Отправить отклик</button> <a href="{% url 'post_detail' pk=request.resolver_match.kwargs.pk %}" class="btn btn-secondary">Отмена</a>
         </form>
     </div>
 {% endblock %}
