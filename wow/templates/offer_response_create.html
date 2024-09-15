@@ -1,0 +1,16 @@
+{% extends 'flatpages/index.html' %}
+
+{% block title %}
+Оставить отклик
+{% endblock %}
+
+{% block content %}
+    <div class="mt-3 mb-4">
+        <h2>Оставить отклик</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Отправить отклик</button>
+        </form>
+    </div>
+{% endblock %}

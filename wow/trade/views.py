@@ -1,15 +1,15 @@
 from django.shortcuts import render
 from django.urls import reverse_lazy
+from django.urls import reverse
+from django.shortcuts import redirect, get_object_or_404
+from django.views import View
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, DetailView
-from .models import Post
-from .forms import PostForm
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.views import View
-from django.urls import reverse
-from django.shortcuts import redirect
 from django.contrib.auth.models import User
+from .models import Post, OfferResponse
+from .forms import PostForm, OfferResponseForm
 
 # Create your views here.
 
@@ -25,15 +25,6 @@ class PostDetailView(DetailView):
     model = Post
     template_name = 'post_detail.html'
     context_object_name = 'post'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        user = self.request.user
-        post = self.get_object()
-
-        context['user_is_author'] = user.is_authenticated and user == post.author
-        context['user_is_staff'] = user.is_authenticated and user.is_staff
-        return context
 
 
 class PostCreateView(LoginRequiredMixin, CreateView):
@@ -59,23 +50,115 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def test_func(self):
         post = self.get_object()
-        return self.request.user.is_superuser or post.author == self.request.user
+        user = self.request.user
+        return user.is_superuser or post.author == user
+
+    def handle_no_permission(self):
+        if self.request.user.is_authenticated:
+            return super().handle_no_permission()
+        else:
+            return redirect('account_login')
 
 
 class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
     template_name = 'post_delete.html'
-    success_url = reverse_lazy('post_list')  # Перенаправление на список постов после удаления
+    success_url = reverse_lazy('post_list')
 
     def test_func(self):
         post = self.get_object()
-        return self.request.user.is_superuser or post.author == self.request.user
+        user = self.request.user
+        return user.is_superuser or post.author == user
 
     def handle_no_permission(self):
         if self.request.user.is_authenticated:
             return super().handle_no_permission()
-        return super().handle_no_permission()
+        else:
+            return redirect('account_login')
+
+
+class OfferResponseView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+    model = OfferResponse
+    template_name = 'offer_response_detail.html'
+    context_object_name = 'response'
     
+    def test_func(self):
+        response = self.get_object()
+        user = self.request.user
+        return response.client == user or response.post.author == user or user.is_superuser
+
+    def handle_no_permission(self):
+        if self.request.user.is_authenticated:
+            return super().handle_no_permission()
+        else:
+            return redirect('account_login')
+
+
+class OfferResponseAcceptView(LoginRequiredMixin, UpdateView):
+    def post(self, request, *args, **kwargs):
+        response = get_object_or_404(OfferResponse, pk=kwargs['pk'])
+        
+        # Проверяем, что пользователь - автор поста
+        if request.user == response.post.author:
+            response.is_accepted = True
+            response.save()
+        
+        return redirect('offer_response_detail', pk=response.pk)
+        
+    
+class AuthorPostResponsesView(LoginRequiredMixin, ListView):
+    model = OfferResponse
+    template_name = 'user_responses.html'
+    context_object_name = 'responses'
+
+    def get_queryset(self):
+        # Получаем все отклики на посты текущего пользователя и сортируем по дате создания (новые сверху)
+        return OfferResponse.objects.filter(post__author=self.request.user).select_related('post').order_by('-created_at')
+        
+    
+class UserPostResponsesView(LoginRequiredMixin, ListView):
+    model = OfferResponse
+    template_name = 'user_responses.html'
+    context_object_name = 'responses'
+
+    def get_queryset(self):
+        # Получаем все отклики на посты текущего пользователя и сортируем по дате создания (новые сверху)
+        return OfferResponse.objects.filter(client=self.request.user).select_related('post').order_by('-created_at')
+
+
+class OfferResponseCreateView(LoginRequiredMixin, CreateView):
+    model = OfferResponse
+    form_class = OfferResponseForm
+    template_name = 'offer_response_create.html'
+
+    def form_valid(self, form):
+        # Привязываем отклик к текущему пользователю
+        form.instance.client = self.request.user
+        # Привязываем отклик к посту
+        post = get_object_or_404(Post, pk=self.kwargs['pk'])
+        form.instance.post = post
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return self.object.post.get_absolute_url()
+
+
+class OfferResponseDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = OfferResponse
+    template_name = 'offer_response_delete.html'
+    success_url = reverse_lazy('post_list')
+
+    def test_func(self):
+        response = self.get_object()
+        user = self.request.user
+        return user.is_superuser or response.post.author == user or response.client == user
+
+    def handle_no_permission(self):
+        if self.request.user.is_authenticated:
+            return super().handle_no_permission()
+        else:
+            return redirect('account_login')
+
 
 # Перенаправление на страницу входа
 class SignupRedirectView(View):
@@ -83,7 +166,7 @@ class SignupRedirectView(View):
         return redirect(reverse('account_login'))
 
 
-class DeleteAccountView(LoginRequiredMixin, DeleteView):
+class DeleteAccountView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = User  # Используйте модель User
     template_name = 'delete_account.html'
     success_url = reverse_lazy('post_list')  # Перенаправление после успешного удаления
@@ -91,9 +174,12 @@ class DeleteAccountView(LoginRequiredMixin, DeleteView):
     def get_object(self, queryset=None):
         return self.request.user  # Удаление текущего пользователя
 
-    def dispatch(self, request, *args, **kwargs):
+    def test_func(self):
         # Проверка, что пользователь удаляет только свой аккаунт
-        if self.get_object() != request.user:
-            return redirect('home')  # Перенаправление, если попытка удаления чужого аккаунта
-        return super().dispatch(request, *args, **kwargs)
-    
+        return self.get_object() == self.request.user
+
+    def handle_no_permission(self):
+        if self.request.user.is_authenticated:
+            return super().handle_no_permission()
+        else:
+            return redirect('account_login')

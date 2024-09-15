@@ -1,6 +1,7 @@
 import os
 from django.db import models
 from django.conf import settings
+from django.urls import reverse
 from ckeditor.fields import RichTextField
 from django.core.files.storage import default_storage
 
@@ -48,16 +49,20 @@ class Post(models.Model):
         # Вызываем метод delete родительского класса
         super().delete(*args, **kwargs)
 
+    def get_absolute_url(self):
+        return reverse('post_detail', kwargs={'pk': self.pk})
+    
     def __str__(self):
         return self.title
 
 
 # Отклик
 class OfferResponse(models.Model):
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # Автор отклика
+    client = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # Автор отклика
     post = models.ForeignKey(Post, related_name='responses', on_delete=models.CASCADE)  # Пост, к которому привязан отклик
     content = models.TextField()  # Содержимое отклика
     created_at = models.DateTimeField(auto_now_add=True)  # Дата создания
+    is_accepted = models.BooleanField(default=False)
 
     def __str__(self):
         return f'{self.author} откликнулся на {self.post.title}:{self.content}'

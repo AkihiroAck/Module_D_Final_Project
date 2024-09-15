@@ -1,0 +1,43 @@
+{% extends 'flatpages/index.html' %}
+
+{% block title %}
+Отклики на ваши посты
+{% endblock %}
+
+{% block content %}
+    <div class="mt-3 mb-4">
+        <h2>Отклики на ваши посты</h2>
+
+        {% if responses %}
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Пост</th>
+                        <th>Отклик</th>
+                        <th>Автор отклика</th>
+                        <th>Статус</th>
+                        <th>Дата отклика</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for response in responses %}
+                        <tr>
+                            <td><a href="{% url 'post_detail' response.post.pk %}">{{ response.post.title }}</a></td>
+                            <td><a href="{% url 'offer_response_detail' response.pk %}">{{ response.content|truncatechars:50 }}</a></td>
+                            <td>{{ response.client.username }}</td>
+                            {% if response.is_accepted %}
+                                <td>Принят</td>
+                            {% else %}
+                                <td>Не принят</td>
+                            {% endif %}
+                            <td>{{ response.created_at }}</td>
+                            <td>{{ response.created_at }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>У вас пока нет откликов на ваши посты.</p>
+        {% endif %}
+    </div>
+{% endblock %}

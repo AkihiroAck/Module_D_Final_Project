@@ -1,0 +1,16 @@
+{% extends 'flatpages/index.html' %}
+
+{% block title %}
+Удалить отклик
+{% endblock %}
+
+{% block content %}
+    <div class="mt-3 mb-4">
+        <h1>Удалить отклик</h1>
+        <p>Вы уверены, что хотите удалить этот отклик?</p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Удалить</button> <a href="{% url 'offer_response_detail' pk=object.pk %}" class="btn btn-secondary">Отмена</a>
+        </form>
+    </div>
+{% endblock %}

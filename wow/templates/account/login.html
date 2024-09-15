@@ -15,6 +15,10 @@
         </form>
         <hr>
         <p>Или войдите через:</p>
-        <a href="{% provider_login_url 'yandex' %}" class="btn btn-primary">Войти через Yandex</a>
+
+        <form method="post" action="{% provider_login_url 'yandex' %}">
+            {% csrf_token %}
+            <p><button type="submit" class="btn btn-primary">Войти через Yandex</button></p>
+        </form>
     </div>
 {% endblock %}

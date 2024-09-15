@@ -72,6 +72,9 @@ MIDDLEWARE = [
 # Для flatpages и django-allauth
 SITE_ID = 1
 
+# Для signals
+SITE_URL = 'http://localhost:8000'  # Замените на URL вашего сайта
+
 # Настройки BACKENDS для django-allauth
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',  # Для обычной аутентификации
@@ -84,10 +87,12 @@ LOGOUT_REDIRECT_URL = '/'
 ACCOUNT_AUTHENTICATION_METHOD = 'username'  # Аутентификация через имя пользователя
 ACCOUNT_USERNAME_REQUIRED = True  # Требовать имя пользователя
 ACCOUNT_EMAIL_REQUIRED = True  # Требовать электронную почту
-# ACCOUNT_EMAIL_VERIFICATION = "mandatory"  # Версификация электронной почты обязательна
-ACCOUNT_EMAIL_VERIFICATION = 'optional'  # Проверка электронной почты может быть обязательной или опциональной
+# ACCOUNT_EMAIL_VERIFICATION = "optional"  # Версификация электронной почты опциональна
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # Версификация электронной почты обязательна
 
 
+# Используем консольный backend для отправки писем
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Настройки загрузки медиафайлов для django-ckeditor
 MEDIA_URL = '/media/'
